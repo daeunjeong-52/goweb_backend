@@ -1,6 +1,6 @@
 const Sequelize = require('sequelize');
 
-module.exports = class RoomCartItem extends Sequelize.Model {
+module.exports = class CartItem extends Sequelize.Model {
     static init(sequelize) {
         return super.init({
             image: {
@@ -35,18 +35,22 @@ module.exports = class RoomCartItem extends Sequelize.Model {
                 type: Sequelize.STRING(100),
                 allowNull: true
             },
+            category: {
+                type: Sequelize.ENUM('room', 'food'),
+                allowNull: false
+            }
         },
         {
             sequelize,
             underscored: true,
-            modelName: 'RoomCartItem',
-            tableName: 'room_cart_items',
+            modelName: 'CartItem',
+            tableName: 'cart_items',
             charset: 'utf8',
             timestamps: true
         });
     };
     static associate(db) {
        // room_carts : room_carts_item -> 1: N
-       db.RoomCartItem.belongsTo(db.RoomCart, { foreignKey: 'room_carts_id', targetkey: 'id'});
+       db.CartItem.belongsTo(db.Cart, { foreignKey: 'carts_id', targetkey: 'id'});
     }
 };

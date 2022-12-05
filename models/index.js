@@ -4,8 +4,8 @@ const RoomItem = require('./roomItem');
 const FoodItem = require('./foodItem');
 const Comment = require('./comment');
 const User = require('./user');
-const RoomCartItem = require('./roomCartItem');
-const RoomCart = require('./roomCart');
+const CartItem = require('./cartItem');
+const Cart = require('./cart');
 
 const env = process.env.NODE_ENV || 'development';
 const config = require('../config/config.json')[env];
@@ -21,24 +21,24 @@ db.RoomItem = RoomItem;
 db.FoodItem = FoodItem;
 db.Comment = Comment;
 db.User = User;
-db.RoomCart = RoomCart;
-db.RoomCartItem = RoomCartItem;
+db.Cart = Cart;
+db.CartItem = CartItem;
 
 ShowPost.init(sequelize);
 RoomItem.init(sequelize);
 FoodItem.init(sequelize);
 Comment.init(sequelize);
 User.init(sequelize);
-RoomCart.init(sequelize);
-RoomCartItem.init(sequelize);
+Cart.init(sequelize);
+CartItem.init(sequelize);
 
 ShowPost.associate(db);
 RoomItem.associate(db);
 FoodItem.associate(db);
 Comment.associate(db);
 User.associate(db);
-RoomCart.associate(db);
-RoomCartItem.associate(db);
+Cart.associate(db);
+CartItem.associate(db);
 
 Object.keys(db).forEach((modelName) => {
     if(db[modelName].associate) {
