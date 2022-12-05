@@ -46,6 +46,7 @@ require('./routes/showPost')(app);
 require('./routes/naver')(app);
 require('./routes/signUp')(app);
 require('./routes/login')(app);
+require('./routes/cart')(app);
 
 app.use((req, res, next) => {
     const error = new Error(`${req.method} ${req.url} 라우터가 없습니다`);
