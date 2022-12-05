@@ -32,6 +32,7 @@ exports.create = (req, res) => {
 
     // create comment
     const comment = {
+        show_posts_id: postId,
         content: req.body.content
     };
 

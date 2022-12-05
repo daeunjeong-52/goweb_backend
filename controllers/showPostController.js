@@ -1,4 +1,5 @@
 const db = require('../models');
+const User = require('../models/user');
 const ShowPost = db.ShowPost;
 const RoomItem = db.RoomItem;
 const FoodItem = db.FoodItem;
@@ -204,6 +205,9 @@ exports.findFoodWithItem = (req, res) => {
 // findAll - my-posts
 exports.findMyPosts = (req, res) => {
 
+    const userId = req.query.userId;
+    console.log(userId);
+
     const currentPage = req.query.currentPage;
     const perPage = req.query.perPage;
 
@@ -213,6 +217,12 @@ exports.findMyPosts = (req, res) => {
     ShowPost.findAll({
         offset: offset,
         limit: limit,
+        include: [{
+            model: User,
+            where: {
+                id: userId
+            }
+        }]
     })
     .then(data => {
         res.send(data)

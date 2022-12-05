@@ -11,10 +11,6 @@ module.exports = class FoodItem extends Sequelize.Model {
                 type: Sequelize.STRING(50),
                 allowNull: true
             },
-            price: {
-                type: Sequelize.INTEGER.UNSIGNED,
-                allowNull: true
-            }
         },
         {
             sequelize,

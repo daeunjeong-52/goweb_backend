@@ -34,6 +34,7 @@ module.exports = class ShowPost extends Sequelize.Model {
         });
     }
     static associate(db) {
+        db.ShowPost.belongsTo(db.User, { foreignKey: 'users_id', targetKey: "id"}),
         db.ShowPost.hasMany(db.RoomItem, {foreignKey: 'show_posts_id', sourceKey: 'id'}),
         db.ShowPost.hasMany(db.FoodItem, {foreignKey: 'show_posts_id', sourceKey: 'id'}),
         db.ShowPost.hasMany(db.Comment, { foreignKey: 'show_posts_id', sourceKey: 'id'})
