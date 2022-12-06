@@ -1,5 +1,6 @@
 module.exports = app => {
 
+    // 장바구니 - 로그인 한 사용자만
     const carts = require('../controllers/cartController');
     var router = require('express').Router();
 

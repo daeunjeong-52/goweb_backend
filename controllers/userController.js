@@ -1,6 +1,7 @@
 const db = require('../models');
 const User = db.User;
 const Op = db.sequelize.Op;
+const jwt = require('jsonwebtoken');
 
 // 회원가입
 exports.signUp = async (req, res) => {
@@ -93,12 +94,40 @@ exports.login = async (req, res) => {
             path: '/',
             httpOnly: true
         }
-        res.cookie('account', JSON.stringify(loginUser));
+
+        const token = jwt.sign({
+            id: loginUser.id,
+            loginId: loginUser.loginId
+        }, "abc1234567", {
+            expiresIn: "15m",
+            issuer: "gowebproject"
+        });
+
+        res.cookie('token', token, options); // cookie
         res.status(200).send({
             userId: loginUser.id,
             username: loginUser.username,
             nickname: loginUser.nickname
         })
+    }
+}
+
+// 로그인 한 사용자 정보 가져오기
+exports.getAccount = (req, res) => {
+
+    console.log(req.cookies.token);
+
+    if(req.cookies && req.cookies.token) {
+        jwt.verify(req.cookies.token, "abc1234567", (err, decoded) => {
+            if(err) {
+                return res.send(401);
+            }
+            console.log(decoded);
+            res.send(decoded);
+        })
+    }
+    else {
+        res.send(401);
     }
 }
 

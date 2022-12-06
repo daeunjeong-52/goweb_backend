@@ -1,13 +1,10 @@
 module.exports = app => {
 
     const users = require('../controllers/userController.js');
-
     var router = require('express').Router();
 
-    router.post("/sign-up", users.signUp);
-
-    // TODO
-    router.post("/login", users.login);
+    router.post("/account", users.login);
+    router.get("/account", users.getAccount);
 
     app.use('/api', router);
 }
