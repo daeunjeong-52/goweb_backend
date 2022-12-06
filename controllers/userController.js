@@ -97,7 +97,7 @@ exports.login = async (req, res) => {
 
         const token = jwt.sign({
             id: loginUser.id,
-            loginId: loginUser.loginId
+            loginId: loginUser.loginId,
         }, "abc1234567", {
             expiresIn: "15m",
             issuer: "gowebproject"
@@ -118,12 +118,23 @@ exports.getAccount = (req, res) => {
     console.log(req.cookies.token);
 
     if(req.cookies && req.cookies.token) {
-        jwt.verify(req.cookies.token, "abc1234567", (err, decoded) => {
+        jwt.verify(req.cookies.token, "abc1234567", async (err, decoded) => {
             if(err) {
                 return res.send(401);
             }
-            console.log(decoded);
-            res.send(decoded);
+
+            const userId = decoded.id;
+            const user = await User.findOne({
+                where: {
+                    id: userId
+                }
+            });
+            res.send({
+                id: user.id,
+                username: user.username,
+                nickname: user.nickname
+            })
+
         })
     }
     else {
