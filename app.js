@@ -35,7 +35,8 @@ require('./routes/showPost')(app);
 require('./routes/naver')(app);
 require('./routes/signUp')(app);
 require('./routes/cart')(app);
-require('./routes/login')(app);
+require('./routes/account')(app);
+require('./routes/comment')(app);
 
 app.use(session({
     resave: false,

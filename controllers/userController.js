@@ -99,7 +99,7 @@ exports.login = async (req, res) => {
             id: loginUser.id,
             loginId: loginUser.loginId,
         }, "abc1234567", {
-            expiresIn: "15m",
+            expiresIn: "30m",
             issuer: "gowebproject"
         });
 
@@ -134,13 +134,21 @@ exports.getAccount = (req, res) => {
                 username: user.username,
                 nickname: user.nickname
             })
-
         })
     }
     else {
-        res.send(401);
+        res.sendStatus(401);
     }
 }
+
+// 로그아웃
+exports.logout = (req, res) => {
+    if(req.cookies && req.cookies.token) {
+        res.clearCookie("token");
+    }
+    res.sendStatus(200);
+}
+
 
 // 회원 전체 조회
 exports.findAll = (req, res) => {
@@ -155,4 +163,3 @@ exports.findAll = (req, res) => {
             });
         })
 };
-

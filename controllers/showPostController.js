@@ -1,5 +1,6 @@
 const db = require('../models');
 const User = require('../models/user');
+const jwt = require('jsonwebtoken');
 const ShowPost = db.ShowPost;
 const RoomItem = db.RoomItem;
 const FoodItem = db.FoodItem;
@@ -205,32 +206,36 @@ exports.findFoodWithItem = (req, res) => {
 // findAll - my-posts
 exports.findMyPosts = (req, res) => {
 
-    const userId = req.query.userId;
-    console.log(userId);
+    if(req.cookies && req.cookies.token) {
+        const decoded = jwt.verify(req.cookies.token, "abc1234567");
+        const userId = decoded.id;
 
-    const currentPage = req.query.currentPage;
-    const perPage = req.query.perPage;
+        const currentPage = req.query.currentPage;
+        const perPage = req.query.perPage;
 
-    const offset = (currentPage - 1) * Number(perPage);
-    const limit = Number(perPage);
+        const offset = (currentPage - 1) * Number(perPage);
+        const limit = Number(perPage);
 
-    ShowPost.findAll({
-        offset: offset,
-        limit: limit,
-        include: [{
-            model: User,
-            where: {
-                id: userId
-            }
-        }]
-    })
-    .then(data => {
-        res.send(data)
-    })
-    .catch(err => {
-        res.status(500).send({
-            message:
-                err.message || 'some error occurred while retreving show rooms main'
+        ShowPost.findAll({
+            offset: offset,
+            limit: limit,
+            include: [{
+                model: User,
+                where: {
+                    id: userId
+                }
+            }]
         })
-    })
+        .then(data => {
+            res.send(data)
+        })
+        .catch(err => {
+            res.status(500).send({
+                message:
+                    err.message || 'some error occurred while retreving show rooms main'
+            })
+        })
+    }
 }
+
+    

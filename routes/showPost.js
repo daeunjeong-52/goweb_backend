@@ -1,7 +1,6 @@
 module.exports = app => {
 
     const showPosts = require('../controllers/showPostController.js');
-    const comments = require('../controllers/commentController.js');
     var router = require('express').Router();
 
     router.get('/rooms/all', showPosts.findRoomAll);
@@ -16,8 +15,6 @@ module.exports = app => {
     router.get('/foods/:id', showPosts.findFoodWithItem); // food post 상세
 
     router.get('/my-posts', showPosts.findMyPosts);
-
-    router.get('/rooms/:id/comments', comments.findAll);
 
     app.use('/api/show', router);
 }

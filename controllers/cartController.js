@@ -4,57 +4,59 @@ const Cart = db.Cart;
 const CartItem = db.CartItem;
 const User = db.User;
 const Op = db.sequelize.Op;
+const jwt = require("jsonwebtoken");
 
 // find room cart
 exports.findRoomCart = async (req, res) => {
 
-    const userId = req.query.userId;
+    if(req.cookies && req.cookies.token) {
 
-    Cart.findOne({
-        include: [{
-            model: User,
+        const decoded = jwt.verify(req.cookies.token, "abc1234567");
+        const userId = decoded.id;
+
+        Cart.findOne({
+            include: [{
+                model: User,
+                where: {
+                    id: userId,
+                }
+            }],
             where: {
-                id: userId,
+                category: "room"
             }
-        }],
-        where: {
-            category: "room"
-        }
-    })
-    .then(data => {
-        res.send(data);
-    })
-    .catch(err => {
-        res.status(500).send({
-            message:
-              err.message || "Some error occurred while retrieving room cart."
-          });
-    })
+        })
+        .then(data => {
+            res.send(data);
+        })
+        .catch(err => {
+            res.status(500).send({
+                message:
+                err.message || "Some error occurred while retrieving room cart."
+            });
+        })
+    }
 }
 
 // roomCartItem -> room cart 에 담기
 exports.saveRoomCartItem = async (req, res) => {
     
-    const userId = req.query.userId;
+    if(req.cookies && req.cookies.token) {
+        const decoded = jwt.verify(req.cookies.token, "abc1234567");
+        const userId = decoded.id;
 
-    // console.log(userId);
-    // console.log(req.body);
-
-    const findRoomCart = await Cart.findOne({
-        include: [{
-            model: User,
+        const findRoomCart = await Cart.findOne({
+            include: [{
+                model: User,
+                where: {
+                    id: userId
+                }
+            }],
             where: {
-                id: userId
-            }
-        }],
-        where: {
-            category: "room",
-        },
-    });
+                category: "room",
+            },
+        });
 
-    // console.log(findRoomCart.id);
-
-    // 새로운 room cart 생성
+        // 새로운 room cart 생성
     if(findRoomCart == null) {
         const newRoomCart = await Cart.create({
             users_id: userId,
@@ -68,7 +70,7 @@ exports.saveRoomCartItem = async (req, res) => {
                 message:
                   err.message || "Some error occurred while creating room cart."
               });
-        })
+        });
 
         const newRoomCartItem = await CartItem.create({
             carts_id: newRoomCart.id,
@@ -89,7 +91,7 @@ exports.saveRoomCartItem = async (req, res) => {
             res.status(500).send({
                 message:
                   err.message || "Some error occurred while creating room cart item."
-              });
+            });
         })
     }else {
         const newRoomCartItem = await CartItem.create({
@@ -113,41 +115,139 @@ exports.saveRoomCartItem = async (req, res) => {
                   err.message || "Some error occurred while creating room cart item."
               });
         })
+        }
     }
 }
 
 // findAll - room cart
 exports.findRoomCartItemAll = async (req, res) => {
-    const userId = req.query.userId;
 
-    const findRoomCart = await Cart.findOne({
-        include: [{
-            model: User,
+    if(req.cookies && req.cookies.token) {
+        const decoded = jwt.verify(req.cookies.token, "abc1234567");
+        const userId = decoded.id;
+
+        const findRoomCart = await Cart.findOne({
+            include: [{
+                model: User,
+                where: {
+                    id: userId,
+                }
+            }],
             where: {
-                id: userId,
+                category: "room"
             }
-        }],
-        where: {
-            category: "room"
-        }
-    });
+           
+        });
+    
+        console.log(findRoomCart.id);
+    
+        CartItem.findAll({
+            where: {
+                carts_id: findRoomCart.id
+            }
+        })
+        .then(data => {
+            res.send(data);
+        })
+        .catch(err => {
+            res.status(500).send({
+                message:
+                  err.message || "Some error occurred while retrieving room cart item."
+              });
+        })
 
-    console.log(findRoomCart.id);
-
-    CartItem.findAll({
-        where: {
-            carts_id: findRoomCart.id
-        }
-    })
-    .then(data => {
-        res.send(data);
-    })
-    .catch(err => {
-        res.status(500).send({
-            message:
-              err.message || "Some error occurred while retrieving room cart item."
-          });
-    })
+    }
 }
 
 // findAll - room cart (pagination)
+exports.findRoomCartItemPaging = async (req, res) => {
+
+    if(req.cookies && req.cookies.token) {
+        const decoded = jwt.verify(req.cookies.token, "abc1234567");
+        const userId = decoded.id;
+
+        const currentPage = req.query.currentPage;
+        const perPage = req.query.perPage;
+
+        const offset = (currentPage - 1) * Number(perPage);
+        const limit = Number(perPage);
+
+        const findRoomCart = await Cart.findOne({
+            include: [{
+                model: User,
+                where: {
+                    id: userId, 
+                },
+            }],
+            where: {
+                category: "room"
+            }
+        });
+    
+        console.log(findRoomCart.id);
+    
+        CartItem.findAll({
+            where: {
+                carts_id: findRoomCart.id
+            },
+            offset: offset,
+            limit: limit
+        })
+        .then(data => {
+            res.send(data);
+        })
+        .catch(err => {
+            res.status(500).send({
+                message:
+                  err.message || "Some error occurred while retrieving room cart item."
+              });
+        })
+    }
+}
+
+// 카트 아이템 삭제
+exports.deleteRoomCartItem = async (req, res) => {
+
+    if(req.cookies && req.cookies.token) {
+
+        const decoded = jwt.verify(req.cookies.token, "abc1234567");
+        const userId = decoded.id;
+
+        const roomItemId = req.params.id;
+
+        const findRoomCart = await Cart.findOne({
+            include: [{
+                model: User,
+                where: {
+                    id: userId, 
+                },
+            }],
+            where: {
+                category: "room"
+            }
+        });
+
+        CartItem.destroy({
+            include: [{
+                model: Cart,
+                where: {
+                    id: findRoomCart.id
+                }
+            }],
+            where: {
+                id: roomItemId
+            }
+        })
+        .then(data => {
+            res.status(200).send({
+                data
+            })
+        })
+        .catch(err => {
+            res.status(500).send({
+                message:
+                  err.message || "Some error occurred while destroying room cart item."
+              });
+        })
+    }
+}

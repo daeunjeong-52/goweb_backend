@@ -1,26 +1,32 @@
 const db = require('../models');
 const Comment = db.Comment;
+const ShowPost = db.ShowPost;
 const Op = db.sequelize.Op;
 
 // Comment 전체 조회
-exports.findAll = (req, res) => {
+exports.findComments = (req, res) => {
 
-    const postId = req.query.postId;
+    const postId = req.params.id;
+    console.log(postId);
 
-    Comment.findAll()
-        .then(data => {
-            res.send(data)
-        })
-        .catch(err => {
-            res.status(500).send({
-                message:
-                    err.message || 'some error occurred while retrieving comments'
-            });
+    Comment.findAll({
+        where: {
+            show_posts_id: parseInt(postId)
+        }
+    })
+    .then(data => {
+        res.send(data)
+    })
+    .catch(err => {
+        res.status(500).send({
+            message:
+                err.message || 'some error occurred while retrieving comments'
         });
+    });
 }
 
 // Comment 추가
-exports.create = (req, res) => {
+exports.addComment = (req, res) => {
 
     if (!req.body.title) {
         res.status(400).send({
