@@ -37,6 +37,7 @@ require('./routes/signUp')(app);
 require('./routes/cart')(app);
 require('./routes/account')(app);
 require('./routes/comment')(app);
+require('./routes/myPost')(app);
 
 app.use(session({
     resave: false,

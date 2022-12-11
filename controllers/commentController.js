@@ -1,15 +1,18 @@
 const db = require('../models');
 const Comment = db.Comment;
-const ShowPost = db.ShowPost;
+const User = db.User;
 const Op = db.sequelize.Op;
 
 // Comment 전체 조회
 exports.findComments = (req, res) => {
 
-    const postId = req.params.id;
+    const postId = req.query.postId;
     console.log(postId);
 
     Comment.findAll({
+        include: [{
+            model: User,
+        }],
         where: {
             show_posts_id: parseInt(postId)
         }
@@ -28,18 +31,22 @@ exports.findComments = (req, res) => {
 // Comment 추가
 exports.addComment = (req, res) => {
 
-    if (!req.body.title) {
+    if (!req.body.content) {
         res.status(400).send({
             message: "Content can not be empty!"
         });
         return;
     }
-    const postId = req.query.postId;
+
+    console.log(req.body.postId);
+    console.log(req.body.content);
+    console.log(req.body.userId);
 
     // create comment
     const comment = {
-        show_posts_id: postId,
-        content: req.body.content
+        show_posts_id: req.body.postId,
+        content: req.body.content,
+        users_id: req.body.userId
     };
 
     // save comment
